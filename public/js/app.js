@@ -183,7 +183,7 @@ profileForm.addEventListener('submit', (event) => {
     return;
   }
   busy(event.submitter || $('[type=submit]', profileForm), 'Mapping your experience…', status, async () => {
-    setStatus(status, 'This takes about 15 seconds.');
+    setStatus(status, 'This takes about 30 seconds.');
     const analysis = await post('/api/analyze', { profile });
     Object.assign(state, {
       profile,
