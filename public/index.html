@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CareerPort — get back to the work you trained for</title>
+  <meta name="description" content="For immigrant professionals in the US: find the US job that matches your experience, get a US-style resume and practice the interview in English, out loud.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/" aria-label="CareerPort home">
+        <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#12302a"/><rect x="7" y="17" width="18" height="6" rx="1" fill="#f2df52"/><path d="M9 10.5h14M9 15h9" stroke="#f3f6f2" stroke-width="2.4" stroke-linecap="round"/></svg>
+        CareerPort
+      </a>
+      <nav class="header-links" aria-label="Main">
+        <a href="#how">How it works</a>
+        <a href="#pricing">Pricing</a>
+        <a class="btn btn--primary btn--small" href="/app">Start free</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div>
+          <h1>Get back to the work you trained for.</h1>
+          <p class="lede">You were an engineer, an accountant or a doctor before you moved. CareerPort turns that experience into a US career plan, a US-style resume and interview practice in English.</p>
+          <div class="hero-cta">
+            <a class="btn btn--primary" href="/app">Build my free plan</a>
+            <span class="muted">No sign-up. Answer in any language.</span>
+          </div>
+        </div>
+
+        <figure class="translation is-animating" id="example" aria-live="polite">
+          <div class="translation-from">
+            <span class="translation-lang" id="ex-lang">Written in Russian</span>
+            <p class="translation-source" id="ex-from" lang="ru">Инженер-строитель, 9 лет, Алматы</p>
+            <p class="translation-now" id="ex-now">Now: delivery driver in Houston</p>
+          </div>
+          <div class="translation-to">
+            <p class="label">Fastest US path</p>
+            <p class="translation-role"><span class="mark" id="ex-role">Civil Engineering Technician</span></p>
+            <ul class="translation-facts" id="ex-facts">
+              <li>$55k–$70k a year to start</li>
+              <li>First offer in 3–5 months</li>
+              <li>No license to start. PE license later for Civil Engineer.</li>
+            </ul>
+          </div>
+          <figcaption class="translation-foot">
+            <span class="small muted">Example. Pay and timing are estimates.</span>
+            <button class="btn btn--quiet btn--small" type="button" id="ex-next">Show another example</button>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section problem" aria-labelledby="problem-h">
+      <div class="wrap">
+        <div>
+          <h2 id="problem-h" class="visually-hidden">The problem</h2>
+          <blockquote>
+            About 2 million college-educated immigrants in the US work in jobs below their skills, or can't find work at all.
+            <cite>Migration Policy Institute, “Untapped Talent” report</cite>
+          </blockquote>
+        </div>
+        <div>
+          <p>Most of them don't lack skills. They lack a map: which US job matches their experience, whether that job needs a license, how to describe their work the way US employers read it, and how to answer interview questions in a second language.</p>
+          <p>Career centers are free but booked for weeks, and they can't sit with you at 11 pm after a shift. CareerPort can.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how" aria-labelledby="how-h">
+      <div class="wrap">
+        <h2 id="how-h">How it works</h2>
+        <ol class="steps">
+          <li>
+            <h3>Tell us what you did back home</h3>
+            <p>A short form about your profession, education and English. Write in your own language if that's easier. It takes about three minutes.</p>
+          </li>
+          <li>
+            <h3>See three US paths</h3>
+            <p>A fast start, your real profession and a higher ceiling, each with pay, timing, cost and license rules. Plus a plan for this week that fits your free hours.</p>
+          </li>
+          <li>
+            <h3>Get ready to be hired</h3>
+            <p>A US resume for the role you pick, and a spoken mock interview with a score, corrected English and stronger answers built from your real experience.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section" id="pricing" aria-labelledby="pricing-h">
+      <div class="wrap">
+        <h2 id="pricing-h">Pricing</h2>
+        <p class="muted">One job offer in your field pays for years of Pro.</p>
+        <div class="plans">
+          <article class="plan-card">
+            <h3>Free</h3>
+            <p class="price">$0</p>
+            <ul>
+              <li>Your three US career paths</li>
+              <li>A weekly plan that fits your hours</li>
+              <li>One US resume</li>
+              <li>Two mock interviews a week</li>
+            </ul>
+            <a class="btn" href="/app">Start free</a>
+          </article>
+          <article class="plan-card plan-card--pro">
+            <h3>Pro</h3>
+            <p class="price">$19 <small>a month</small></p>
+            <ul>
+              <li>Unlimited mock interviews with feedback</li>
+              <li>A resume for every path and every job post</li>
+              <li>A new weekly plan every Monday</li>
+              <li>Progress tracking until you're hired</li>
+            </ul>
+            <a class="btn btn--primary" href="/app" id="pro-cta">Start free, upgrade anytime</a>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>CareerPort gives career guidance, not legal or immigration advice. Always confirm licensing rules with your state's licensing board.</p>
+      <p>Your answers stay in your browser. We send them to our AI provider only to create your plan, resume and feedback.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/landing.js"></script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your US career plan — CareerPort</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="banner" id="config-banner" hidden>
+    <div class="wrap">The AI key is not set on this server, so plans can't be created yet. Add GEMINI_API_KEY (or OPENAI_API_KEY / ANTHROPIC_API_KEY) in the hosting settings and redeploy.</div>
+  </div>
+
+  <header class="site-header app-header">
+    <div class="wrap">
+      <a class="brand" href="/" aria-label="CareerPort home">
+        <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#12302a"/><rect x="7" y="17" width="18" height="6" rx="1" fill="#f2df52"/><path d="M9 10.5h14M9 15h9" stroke="#f3f6f2" stroke-width="2.4" stroke-linecap="round"/></svg>
+        CareerPort
+      </a>
+      <span class="small muted">Saved in this browser</span>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Your plan">
+    <ul class="wrap">
+      <li><a href="#profile" data-tab="profile">Profile</a></li>
+      <li><a href="#paths" data-tab="paths">Career paths</a></li>
+      <li><a href="#resume" data-tab="resume">Resume</a></li>
+      <li><a href="#interview" data-tab="interview">Interview practice</a></li>
+      <li><a href="#progress" data-tab="progress">Progress</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <!-- Profile -->
+    <section class="view" id="view-profile" aria-labelledby="profile-h" hidden>
+      <div class="wrap">
+        <header class="view-head">
+          <h1 id="profile-h">What did you do before you moved?</h1>
+          <p class="lede">We'll match it to real US jobs. Write in your own language if that's easier.</p>
+        </header>
+
+        <form class="form" id="profile-form" novalidate>
+          <div class="field">
+            <label for="f-profession">Your profession back home</label>
+            <input id="f-profession" name="profession" type="text" required maxlength="200" placeholder="e.g. Civil engineer, designed bridges and roads" autocomplete="organization-title">
+            <p class="hint">Include your specialty. Any language is fine.</p>
+          </div>
+
+          <div class="form-row form-row--3">
+            <div class="field">
+              <label for="f-country">Country where you worked</label>
+              <input id="f-country" name="homeCountry" type="text" required maxlength="80" placeholder="e.g. Kazakhstan" autocomplete="country-name">
+            </div>
+            <div class="field">
+              <label for="f-years">Years of experience</label>
+              <input id="f-years" name="yearsExperience" type="number" inputmode="numeric" min="0" max="45" required value="5">
+            </div>
+            <div class="field">
+              <label for="f-name">First name <span class="muted">(optional)</span></label>
+              <input id="f-name" name="firstName" type="text" maxlength="60" autocomplete="given-name">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="f-education">Education</label>
+            <input id="f-education" name="education" type="text" required maxlength="300" placeholder="e.g. Master's in civil engineering, Satbayev University, 2014">
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="f-current">Your job in the US now</label>
+              <input id="f-current" name="currentJob" type="text" maxlength="120" placeholder="e.g. Delivery driver, or not working">
+            </div>
+            <div class="field">
+              <label for="f-state">US state you live in</label>
+              <select id="f-state" name="state" required></select>
+            </div>
+          </div>
+
+          <fieldset class="field">
+            <legend>Your English today</legend>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="englishLevel" value="basic"><span>Basic</span></label>
+              <label class="choice"><input type="radio" name="englishLevel" value="conversational" checked><span>Conversational</span></label>
+              <label class="choice"><input type="radio" name="englishLevel" value="professional"><span>Professional</span></label>
+              <label class="choice"><input type="radio" name="englishLevel" value="fluent"><span>Fluent</span></label>
+            </div>
+          </fieldset>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="f-hours">Hours a week for your career</label>
+              <select id="f-hours" name="hoursPerWeek">
+                <option value="2">2 hours</option>
+                <option value="3">3 hours</option>
+                <option value="5" selected>5 hours</option>
+                <option value="8">8 hours</option>
+                <option value="12">12 hours</option>
+                <option value="20">20 hours</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-auth">Can you work for any US employer?</label>
+              <select id="f-auth" name="workAuth">
+                <option value="any_employer">Yes</option>
+                <option value="need_sponsorship">I'll need visa sponsorship</option>
+                <option value="not_sure" selected>I'm not sure</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="f-language">Explain my results in</label>
+            <select id="f-language" name="language">
+              <option value="English">English</option>
+              <option value="Spanish" lang="es">Español</option>
+              <option value="Russian" lang="ru">Русский</option>
+              <option value="Kazakh" lang="kk">Қазақша</option>
+              <option value="Ukrainian" lang="uk">Українська</option>
+              <option value="Uzbek" lang="uz">Oʻzbekcha</option>
+              <option value="Chinese (Simplified)" lang="zh">中文</option>
+              <option value="Hindi" lang="hi">हिन्दी</option>
+              <option value="Portuguese" lang="pt">Português</option>
+              <option value="Arabic" lang="ar">العربية</option>
+              <option value="Vietnamese" lang="vi">Tiếng Việt</option>
+              <option value="Tagalog" lang="tl">Tagalog</option>
+              <option value="French" lang="fr">Français</option>
+            </select>
+            <p class="hint">Job titles, your resume and interview practice stay in English.</p>
+          </div>
+
+          <div class="field">
+            <label for="f-goal">Anything else we should know? <span class="muted">(optional)</span></label>
+            <textarea id="f-goal" name="goal" maxlength="600" placeholder="e.g. I want to stay in structural design. I have a car and can commute 1 hour."></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn--primary" type="submit">Show my US career paths</button>
+            <p class="status" id="profile-status" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Paths -->
+    <section class="view" id="view-paths" aria-label="Career paths" hidden>
+      <div class="wrap" id="paths-root"></div>
+    </section>
+
+    <!-- Resume -->
+    <section class="view" id="view-resume" aria-labelledby="resume-h" hidden>
+      <div class="wrap">
+        <header class="view-head">
+          <h1 id="resume-h">Your US resume</h1>
+          <p class="lede">We rewrite your experience the way US employers read it: one page, results first, no photo or age.</p>
+        </header>
+        <div id="resume-empty"></div>
+        <div class="split" id="resume-main">
+          <form class="form" id="resume-form" novalidate>
+            <div class="field">
+              <label for="r-role">Role you're applying for</label>
+              <input id="r-role" name="role" type="text" list="role-list" required maxlength="120">
+              <datalist id="role-list"></datalist>
+            </div>
+            <div class="field">
+              <label for="r-experience">Your experience, in any language <span class="muted">(recommended)</span></label>
+              <textarea id="r-experience" name="experience" maxlength="6000" rows="9" placeholder="Paste your old resume, or list your jobs: company, years, what you did, team size, results, tools you used."></textarea>
+              <p class="hint">The more facts you give, the fewer blanks you'll need to fill. We never invent numbers.</p>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label for="r-name">Full name</label>
+                <input id="r-name" name="name" type="text" maxlength="80" autocomplete="name">
+              </div>
+              <div class="field">
+                <label for="r-city">City, state</label>
+                <input id="r-city" name="city" type="text" maxlength="80" placeholder="e.g. Houston, TX" autocomplete="address-level2">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label for="r-email">Email</label>
+                <input id="r-email" name="email" type="email" maxlength="120" autocomplete="email">
+              </div>
+              <div class="field">
+                <label for="r-phone">Phone</label>
+                <input id="r-phone" name="phone" type="tel" maxlength="40" autocomplete="tel">
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn--primary" type="submit">Build my US resume</button>
+              <p class="status" id="resume-status" role="status" aria-live="polite"></p>
+            </div>
+          </form>
+          <div id="resume-output" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interview -->
+    <section class="view" id="view-interview" aria-labelledby="interview-h" hidden>
+      <div class="wrap interview-layout">
+        <header class="view-head">
+          <h1 id="interview-h">Practice the interview, out loud</h1>
+          <p class="lede">A US hiring manager asks you five questions. Answer by voice or by typing. Then you get a score, corrected English and stronger answers.</p>
+        </header>
+
+        <form class="form" id="interview-setup" novalidate>
+          <div class="field">
+            <label for="i-role">Role you're interviewing for</label>
+            <input id="i-role" name="role" type="text" list="role-list" required maxlength="120" placeholder="e.g. Civil Engineering Technician">
+          </div>
+          <label class="switch"><input type="checkbox" id="i-speak" checked> Read the questions out loud</label>
+          <p class="hint" id="voice-hint"></p>
+          <div class="form-actions">
+            <button class="btn btn--primary" type="submit">Start mock interview</button>
+            <p class="status" id="setup-status" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+
+        <div id="interview-live" hidden>
+          <p class="question-count" id="question-count"></p>
+          <ol class="transcript" id="transcript" aria-live="polite"></ol>
+
+          <form class="composer" id="composer" novalidate>
+            <label class="visually-hidden" for="answer">Your answer</label>
+            <textarea id="answer" rows="4" maxlength="2500" placeholder="Press Speak and answer out loud, or type here."></textarea>
+            <div class="composer-actions">
+              <button class="btn mic" type="button" id="mic" aria-pressed="false"><span class="mic-dot" aria-hidden="true"></span><span id="mic-label">Speak</span></button>
+              <button class="btn btn--primary" type="submit" id="send">Send answer</button>
+              <button class="btn btn--quiet" type="button" id="repeat">Hear the question again</button>
+            </div>
+            <p class="status" id="live-status" role="status" aria-live="polite"></p>
+          </form>
+
+          <div class="form-actions" id="finish" hidden>
+            <button class="btn btn--primary" type="button" id="get-feedback">Get my feedback</button>
+            <p class="status" id="finish-status" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+
+        <div id="interview-feedback" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- Progress -->
+    <section class="view" id="view-progress" aria-labelledby="progress-h" hidden>
+      <div class="wrap">
+        <header class="view-head">
+          <h1 id="progress-h">Your progress</h1>
+          <p class="lede">Practice a little every week. Scores usually climb after three or four interviews.</p>
+        </header>
+        <div id="progress-root"></div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="upgrade" aria-labelledby="upgrade-h">
+    <h2 id="upgrade-h">You've used this week's free interviews</h2>
+    <p>Free includes two mock interviews a week. Pro gives you unlimited practice with feedback for $19 a month. Cancel anytime.</p>
+    <div class="actions">
+      <a class="btn btn--primary" id="upgrade-pro" href="/#pricing" target="_blank" rel="noopener">See Pro</a>
+      <button class="btn" type="button" id="upgrade-continue">Keep practicing for now</button>
+    </div>
+    <p class="hint" style="margin-top:1rem">During the launch, extra interviews stay free.</p>
+  </dialog>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
