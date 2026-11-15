@@ -4,6 +4,7 @@ import { load, save, weekKey } from './store.js';
 import { canListen, canSpeak, createRecognizer, speak, stopSpeaking } from './voice.js';
 
 const FREE_INTERVIEWS_PER_WEEK = 2;
+const FREE_MATCHES_PER_WEEK = 3;
 const US_STATES = [
   'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware',
   'District of Columbia', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas',
@@ -114,8 +115,9 @@ function fillRoleList() {
 
 /* ---------------- routing ---------------- */
 
-const VIEWS = ['profile', 'paths', 'resume', 'interview', 'progress'];
+const VIEWS = ['profile', 'paths', 'resume', 'match', 'interview', 'progress'];
 const RENDER = {
+  match: renderMatch,
   profile: renderProfile,
   paths: renderPaths,
   resume: renderResume,
@@ -138,6 +140,7 @@ function show(view) {
     stopSpeaking();
     if (recognizer?.listening) recognizer.stop();
   }
+  $(`[data-tab="${view}"]`).scrollIntoView({ block: 'nearest', inline: 'center' });
   fillRoleList();
   RENDER[view]();
   window.scrollTo({ top: 0 });
@@ -448,6 +451,130 @@ function renderResumeSheet() {
   );
 }
 
+/* ---------------- job match ---------------- */
+
+const matchForm = $('#match-form');
+
+function matchesThisWeek() {
+  const week = weekKey();
+  return state.matches.filter((m) => weekKey(new Date(m.date)) === week).length;
+}
+
+function copyButton(label, getText) {
+  const note = h('span', { class: 'small muted', role: 'status' });
+  const button = h('button', {
+    class: 'btn btn--small',
+    type: 'button',
+    onclick: async () => {
+      try {
+        await navigator.clipboard.writeText(getText());
+        note.textContent = 'Copied.';
+      } catch {
+        note.textContent = 'Copy is blocked in this browser. Select the text and copy it by hand.';
+      }
+    },
+  }, label);
+  return h('div', { class: 'toolbar' }, button, note);
+}
+
+function practiceForJob(record) {
+  const role = record.result.role || preferredRole();
+  state.interviewJob = { role, company: record.result.company, jobPost: record.jobPost };
+  selectRole(role);
+  setupForm.elements.role.value = role;
+}
+
+function renderMatch() {
+  const ready = Boolean(state.profile);
+  $('#match-main').hidden = !ready;
+  mount($('#match-empty'), !ready && emptyState(
+    'Job matching needs your profile',
+    'Fill in your profile first, so we can compare your experience with the job.',
+    'Fill in my profile',
+    '#profile',
+  ));
+  if (!ready) return;
+  const last = state.matches[0];
+  if (last && !matchForm.elements.jobPost.value) matchForm.elements.jobPost.value = last.jobPost;
+  renderMatchResult(last);
+}
+
+function renderMatchResult(record) {
+  const out = $('#match-output');
+  if (!record) {
+    mount(out, h('div', { class: 'empty' },
+      h('h2', {}, 'Your match will appear here'),
+      h('p', {}, 'Paste a job post on the left and press "Check my match".'),
+    ));
+    return;
+  }
+  const m = record.result;
+  mount(out, h('article', { class: 'match', 'aria-labelledby': 'match-title' },
+    h('p', { class: 'path-kind' }, `Checked ${formatDate(record.date)}`),
+    h('h2', { class: 'match-title', id: 'match-title' }, [m.role, m.company].filter(Boolean).join(' at ') || 'This job'),
+    h('div', { class: 'score-block' },
+      h('p', { class: 'score', 'aria-label': `Match ${m.matchScore} out of 100` }, String(m.matchScore), h('small', {}, ' / 100 match')),
+      m.verdict && h('p', {}, m.verdict),
+    ),
+    h('div', { class: 'two-col' },
+      m.matches.length > 0 && h('div', {}, h('h3', {}, 'You already have'), h('ul', {}, m.matches.map((x) => h('li', {}, x)))),
+      m.gaps.length > 0 && h('div', {}, h('h3', {}, 'What is missing'), h('ul', {}, m.gaps.map((g) => h('li', {},
+        h('strong', {}, g.gap),
+        g.how && h('span', { class: 'fix-why' }, g.how),
+      )))),
+    ),
+    m.keywords.length > 0 && h('section', { class: 'match-block' },
+      h('h3', {}, 'Words to use in your resume'),
+      h('ul', { class: 'tags' }, m.keywords.map((k) => h('li', {}, k))),
+    ),
+    (m.summary || m.bullets.length > 0) && h('section', { class: 'match-block' },
+      h('h3', {}, 'Your resume, tuned for this job'),
+      m.summary && h('p', {}, m.summary),
+      m.bullets.length > 0 && h('ul', { class: 'match-list' }, m.bullets.map((b) => h('li', {}, b))),
+      copyButton('Copy summary and bullets', () => [m.summary, ...m.bullets.map((b) => `- ${b}`)].filter(Boolean).join('\n')),
+    ),
+    m.coverNote && h('section', { class: 'match-block' },
+      h('h3', {}, 'Cover note'),
+      h('p', { class: 'cover-note' }, m.coverNote),
+      copyButton('Copy cover note', () => m.coverNote),
+    ),
+    h('p', { class: 'placeholder-note' }, 'Replace every [X] with your real numbers before you send anything.'),
+    m.questions.length > 0 && h('section', { class: 'match-block' },
+      h('h3', {}, 'Questions they will likely ask'),
+      h('ol', { class: 'match-list' }, m.questions.map((q) => h('li', {}, q))),
+    ),
+    h('div', { class: 'actions' },
+      h('a', { class: 'btn btn--primary', href: '#interview', onclick: () => practiceForJob(record) }, 'Practice the interview for this job'),
+    ),
+  ));
+}
+
+matchForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = event.submitter || $('[type=submit]', matchForm);
+  const status = $('#match-status');
+  const jobPost = matchForm.elements.jobPost.value.trim();
+  if (jobPost.length < 80) {
+    setStatus(status, 'Paste the whole job post, including the requirements.', true);
+    return;
+  }
+  if (matchesThisWeek() >= FREE_MATCHES_PER_WEEK && !(await askToUpgrade('match'))) return;
+  busy(button, 'Reading the job post…', status, async () => {
+    setStatus(status, 'This takes about 30 seconds.');
+    const result = await post('/api/match', {
+      profile: state.profile,
+      jobPost,
+      resumeText: state.resume ? resumeAsText(state.resume) : '',
+    });
+    const record = { id: Date.now().toString(36), date: new Date().toISOString(), jobPost, result };
+    state.matches = [record, ...state.matches].slice(0, 10);
+    persist();
+    setStatus(status, '');
+    renderMatchResult(record);
+    $('#match-output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
 /* ---------------- interview ---------------- */
 
 const setupForm = $('#interview-setup');
@@ -472,10 +599,35 @@ function renderInterview() {
   if (!state.profile) hints.push('Tip: fill in your profile first, so the questions match your experience.');
   $('#voice-hint').textContent = hints.join(' ');
   micBtn.hidden = !canListen;
+
+  const job = state.interviewJob;
+  $('#job-context').hidden = !job;
+  if (job) {
+    $('#job-context-text').textContent = `Questions will follow the job post for ${[job.role, job.company].filter(Boolean).join(' at ')}.`;
+  }
 }
 
-function askToUpgrade() {
+$('#job-context-clear').addEventListener('click', () => {
+  state.interviewJob = null;
+  persist();
+  renderInterview();
+});
+
+const UPGRADE_TEXT = {
+  interview: {
+    title: "You've used this week's free interviews",
+    text: 'Free includes two mock interviews a week. Pro gives you unlimited practice with feedback for $19 a month. Cancel anytime.',
+  },
+  match: {
+    title: "You've used this week's free job checks",
+    text: 'Free includes three job post checks a week. Pro gives you unlimited checks with a tailored resume and cover note for $19 a month. Cancel anytime.',
+  },
+};
+
+function askToUpgrade(kind = 'interview') {
   const dialog = $('#upgrade');
+  $('#upgrade-h').textContent = UPGRADE_TEXT[kind].title;
+  $('#upgrade-text').textContent = UPGRADE_TEXT[kind].text;
   if (config.paymentLink) {
     $('#upgrade-pro').href = config.paymentLink;
     $('#upgrade-pro').textContent = 'Get Pro for $19 a month';
@@ -496,10 +648,16 @@ function renderTranscript() {
   $('#question-count').textContent = session.done
     ? 'Interview finished'
     : `Question ${Math.max(asked, 1)} of ${session.total}`;
-  $('#transcript').replaceChildren(...session.transcript.map((turn) => h('li', { class: `turn turn--${turn.from}` },
-    h('span', { class: 'turn-who' }, turn.from === 'interviewer' ? 'Interviewer' : 'You'),
-    h('p', {}, turn.text),
-  )));
+  mount($('#transcript'),
+    session.transcript.map((turn) => h('li', { class: `turn turn--${turn.from}` },
+      h('span', { class: 'turn-who' }, turn.from === 'interviewer' ? 'Interviewer' : 'You'),
+      h('p', {}, turn.text),
+    )),
+    session.pending && h('li', { class: 'turn turn--interviewer' },
+      h('span', { class: 'turn-who' }, 'Interviewer'),
+      h('p', { class: 'typing', role: 'img', 'aria-label': 'The interviewer is typing' }, h('span'), h('span'), h('span')),
+    ),
+  );
 }
 
 function lastQuestion() {
@@ -512,17 +670,20 @@ async function nextTurn() {
   const send = $('#send');
   send.disabled = true;
   answerEl.disabled = true;
-  setStatus(status, 'The interviewer is thinking…');
+  setStatus(status, '');
+  session.pending = true;
+  renderTranscript();
   try {
     const res = await post('/api/interview', {
       role: session.role,
       profile: state.profile,
       transcript: session.transcript,
+      jobPost: session.jobPost,
     });
     session.transcript.push({ from: 'interviewer', text: res.message });
     session.total = res.totalQuestions;
     session.done = res.done;
-    setStatus(status, '');
+    session.pending = false;
     renderTranscript();
     if ($('#i-speak').checked) speak(res.message);
     if (session.done) {
@@ -534,6 +695,8 @@ async function nextTurn() {
     }
     return true;
   } catch (err) {
+    session.pending = false;
+    renderTranscript();
     setStatus(status, err.message, true);
     return false;
   } finally {
@@ -552,7 +715,8 @@ setupForm.addEventListener('submit', async (event) => {
   }
   if (interviewsThisWeek() >= FREE_INTERVIEWS_PER_WEEK && !(await askToUpgrade())) return;
 
-  session = { role, transcript: [], done: false, total: 5 };
+  const job = state.interviewJob && state.interviewJob.role === role ? state.interviewJob : null;
+  session = { role, transcript: [], done: false, total: 5, jobPost: job?.jobPost || '' };
   selectRole(role);
   $('#interview-feedback').replaceChildren();
   setupForm.hidden = true;
@@ -716,6 +880,7 @@ function renderProgress() {
   mount(root,
     h('dl', { class: 'stats' },
       h('div', { class: 'stat' }, h('dt', {}, 'Mock interviews'), h('dd', {}, String(scores.length))),
+      h('div', { class: 'stat' }, h('dt', {}, 'Jobs checked'), h('dd', {}, String(state.matches.length))),
       h('div', { class: 'stat' }, h('dt', {}, 'Latest score'), h('dd', {}, scores.length ? String(scores[0]) : 'None yet')),
       h('div', { class: 'stat' }, h('dt', {}, 'Best score'), h('dd', {}, scores.length ? String(Math.max(...scores)) : 'None yet')),
       tasks.length > 0 && h('div', { class: 'stat' }, h('dt', {}, 'Plan this week'), h('dd', {}, `${tasksDone} of ${tasks.length}`)),
