@@ -8,6 +8,8 @@ const empty = () => ({
   resume: null,
   resumeInput: null,
   interviews: [],
+  matches: [],
+  interviewJob: null,
   plan: { week: null, done: {} },
 });
 
