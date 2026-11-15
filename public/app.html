@@ -30,6 +30,7 @@
       <li><a href="#profile" data-tab="profile">Profile</a></li>
       <li><a href="#paths" data-tab="paths">Career paths</a></li>
       <li><a href="#resume" data-tab="resume">Resume</a></li>
+      <li><a href="#match" data-tab="match">Job match</a></li>
       <li><a href="#interview" data-tab="interview">Interview practice</a></li>
       <li><a href="#progress" data-tab="progress">Progress</a></li>
     </ul>
@@ -202,6 +203,31 @@
       </div>
     </section>
 
+    <!-- Job match -->
+    <section class="view" id="view-match" aria-labelledby="match-h" hidden>
+      <div class="wrap">
+        <header class="view-head">
+          <h1 id="match-h">Check a job post</h1>
+          <p class="lede">Paste any US job post. See how well you fit, what is missing, and get a resume summary and cover note written for this exact job.</p>
+        </header>
+        <div id="match-empty"></div>
+        <div class="split" id="match-main">
+          <form class="form" id="match-form" novalidate>
+            <div class="field">
+              <label for="m-post">Job post</label>
+              <textarea id="m-post" name="jobPost" rows="14" maxlength="8000" placeholder="Copy the whole job post from Indeed, LinkedIn or a company site and paste it here."></textarea>
+              <p class="hint">Include the requirements section. Up to about two pages.</p>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn--primary" type="submit">Check my match</button>
+              <p class="status" id="match-status" role="status" aria-live="polite"></p>
+            </div>
+          </form>
+          <div id="match-output" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
     <!-- Interview -->
     <section class="view" id="view-interview" aria-labelledby="interview-h" hidden>
       <div class="wrap interview-layout">
@@ -214,6 +240,10 @@
           <div class="field">
             <label for="i-role">Role you're interviewing for</label>
             <input id="i-role" name="role" type="text" list="role-list" required maxlength="120" placeholder="e.g. Civil Engineering Technician">
+          </div>
+          <div class="job-context" id="job-context" hidden>
+            <p id="job-context-text"></p>
+            <button class="btn btn--quiet btn--small" type="button" id="job-context-clear">Practice without the job post</button>
           </div>
           <label class="switch"><input type="checkbox" id="i-speak" checked> Read the questions out loud</label>
           <p class="hint" id="voice-hint"></p>
@@ -262,7 +292,7 @@
 
   <dialog id="upgrade" aria-labelledby="upgrade-h">
     <h2 id="upgrade-h">You've used this week's free interviews</h2>
-    <p>Free includes two mock interviews a week. Pro gives you unlimited practice with feedback for $19 a month. Cancel anytime.</p>
+    <p id="upgrade-text">Free includes two mock interviews a week. Pro gives you unlimited practice with feedback for $19 a month. Cancel anytime.</p>
     <div class="actions">
       <a class="btn btn--primary" id="upgrade-pro" href="/#pricing" target="_blank" rel="noopener">See Pro</a>
       <button class="btn" type="button" id="upgrade-continue">Keep practicing for now</button>
