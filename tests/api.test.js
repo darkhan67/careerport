@@ -123,6 +123,13 @@ describe('POST /api/analyze', () => {
     assert.equal(calls.length, 2);
   });
 
+  test('retries once when the provider has a transient 5xx error', async () => {
+    stubAI(new Response(JSON.stringify({ error: { message: 'internal' } }), { status: 500 }), analysis);
+    const res = await call('analyze', { profile });
+    assert.equal(res.statusCode, 200);
+    assert.equal(calls.length, 2);
+  });
+
   test('explains a rejected API key instead of failing silently', async () => {
     stubAI(new Response(JSON.stringify({ error: { message: 'API key not valid' } }), { status: 400 }));
     const res = await call('analyze', { profile });
@@ -170,6 +177,68 @@ describe('POST /api/interview', () => {
       transcript: [{ from: 'interviewer', text: 'Tell me about yourself.' }],
     });
     assert.equal(res.statusCode, 400);
+  });
+});
+
+describe('fast mode', () => {
+  test('interview turns ask Gemini for low reasoning effort', async () => {
+    stubAI({ message: 'Tell me about yourself.' });
+    await call('interview', { role: 'Staff Accountant', transcript: [] });
+    assert.deepEqual(calls[0].body.generationConfig.thinkingConfig, { thinkingLevel: 'low' });
+  });
+
+  test('falls back to default settings when the model rejects low reasoning', async () => {
+    stubAI(new Response(JSON.stringify({ error: { message: 'thinking_level is not supported' } }), { status: 400 }), {
+      message: 'Tell me about yourself.',
+    });
+    const res = await call('interview', { role: 'Staff Accountant', transcript: [] });
+    assert.equal(res.statusCode, 200);
+    assert.equal(calls.length, 2);
+    assert.equal(calls[1].body.generationConfig.thinkingConfig, undefined);
+  });
+
+  test('a job post shapes the interview questions', async () => {
+    stubAI({ message: 'Hi, tell me about yourself.' });
+    await call('interview', {
+      role: 'Staff Accountant',
+      transcript: [],
+      jobPost: 'Requirements: QuickBooks, month-end close, US GAAP reconciliations.',
+    });
+    assert.match(calls[0].body.systemInstruction.parts[0].text, /month-end close/);
+  });
+});
+
+describe('POST /api/match', () => {
+  const jobPost =
+    'Civil Engineering Technician, Harris County. Requirements: AutoCAD Civil 3D, 3+ years of roadway or bridge design, field inspection experience, valid driver license. EIT preferred.';
+
+  test('rejects a job post that is too short', async () => {
+    stubAI({});
+    const res = await call('match', { profile, jobPost: 'Engineer' });
+    assert.equal(res.statusCode, 400);
+    assert.equal(calls.length, 0);
+  });
+
+  test('scores the match and returns a tailored application', async () => {
+    stubAI({
+      role: 'Civil Engineering Technician',
+      company: 'Harris County',
+      matchScore: 130,
+      verdict: 'Сильное совпадение.',
+      matches: ['9 лет проектирования мостов'],
+      gaps: [{ gap: 'EIT', how: 'Сдать экзамен FE' }, { gap: '', how: 'x' }],
+      keywords: ['AutoCAD Civil 3D', 'field inspection'],
+      summary: 'Civil engineer with 9 years of bridge design.',
+      bullets: ['Designed [N] bridges in AutoCAD Civil 3D.'],
+      coverNote: 'Dear hiring team, ...',
+      questions: ['Tell me about a field inspection you led.'],
+    });
+    const res = await call('match', { profile, jobPost });
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.body.matchScore, 100, 'clamps the score');
+    assert.equal(res.body.gaps.length, 1, 'drops empty gaps');
+    assert.match(calls[0].body.contents[0].parts[0].text, /Harris County/);
+    assert.match(calls[0].body.systemInstruction.parts[0].text, /in Russian/);
   });
 });
 
