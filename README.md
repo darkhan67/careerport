@@ -7,7 +7,8 @@ CareerPort helps immigrant professionals in the US who work below their skill le
 1. **Three US career paths** matched to their foreign experience: a fast start, their real profession and a higher ceiling. Each path comes with starting pay, time to a first offer, upfront cost and license rules.
 2. **A plan for this week** that fits the hours they actually have after a shift, with a checklist they come back to.
 3. **A US-style resume** for the chosen role: one page, results first, foreign titles translated, and placeholders instead of invented numbers.
-4. **A spoken mock interview** with an AI hiring manager (five questions, answered by voice or typing), followed by a score, corrected English, stronger model answers and phrases to learn.
+4. **A job post check.** Paste any US job post to get a match score, what is missing and how to close it, the keywords to use, a resume summary and bullets rewritten for that job, and a short cover note.
+5. **A spoken mock interview** with an AI hiring manager (five questions, answered by voice or typing), tailored to a job post if you checked one, followed by a score, corrected English, stronger model answers and phrases to learn.
 
 Users can write in their own language and read the explanations in 13 languages. Everything that goes to an employer (resume, interview) stays in English.
 
@@ -22,24 +23,26 @@ B2C freemium.
 | | Free | Pro, $19/month |
 |---|---|---|
 | Career paths and weekly plan | ✓ | ✓, refreshed every Monday |
-| US resume | 1 | One for every path and job post |
+| US resume | 1 | One for every path |
+| Job post checks | 3 per week | Unlimited, with tailored resume and cover note |
 | Mock interviews | 2 per week | Unlimited |
 | Progress tracking | ✓ | ✓ |
 
-A single offer in their field raises a user's pay by tens of thousands of dollars a year, so the subscription pays for itself many times over. During the competition the weekly interview limit is soft (the upgrade screen can be dismissed) so the jury can test everything. Set `STRIPE_PAYMENT_LINK` to send the Pro button to a Stripe Payment Link.
+A single offer in their field raises a user's pay by tens of thousands of dollars a year, so the subscription pays for itself many times over. During the competition the weekly limits are soft (the upgrade screen can be dismissed) so the jury can test everything. Set `STRIPE_PAYMENT_LINK` to send the Pro button to a Stripe Payment Link.
 
 ## How it works
 
 ```
 public/            Static frontend (vanilla HTML/CSS/JS, no build step)
   index.html       Landing page
-  app.html         The app: profile, paths, resume, interview, progress
+  app.html         The app: profile, paths, resume, job match, interview, progress
   js/app.js        App logic and rendering (safe DOM building, no innerHTML)
   js/voice.js      Browser speech recognition and text-to-speech
   js/store.js      Local storage: the user's data stays in their browser
 api/               Vercel serverless functions (Node.js)
   analyze.js       POST: profile → 3 paths, weekly plan, credential advice
   resume.js        POST: profile + notes → structured US resume
+  match.js         POST: job post → match score, gaps, tailored resume and cover note
   interview.js     POST: transcript → the interviewer's next line
   feedback.js      POST: transcript → score, fixes, stronger answers
   config.js        GET: public settings (is AI configured, payment link)
